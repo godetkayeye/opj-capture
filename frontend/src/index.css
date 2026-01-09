@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-opj-black text-white antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-white text-opj-black px-6 py-2.5 rounded-lg font-semibold 
+           hover:bg-opacity-95 hover:shadow-lg hover:scale-[1.02] 
+           active:scale-[0.98] transition-all duration-200 
+           focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-opj-black;
+}
+
+  .btn-secondary {
+    @apply border border-white text-white px-6 py-2.5 rounded-lg font-semibold 
+           hover:bg-white hover:text-opj-black transition-all duration-200 
+           focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-opj-black;
+}
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-white text-opj-black rounded-lg border border-opj-border
+           focus:outline-none focus:ring-2 focus:ring-opj-black focus:border-transparent
+           placeholder:text-opj-gray-light transition-all duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-xl p-6 sm:p-8 text-opj-black;
+  }
+  
+  .card-dark {
+    @apply bg-opj-gray-dark rounded-xl border border-opj-gray p-6 text-white;
+}
+}
+
+@layer utilities {
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+}
+
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+      transform: translateX(5px);
+  }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out;
+  }
+
+  .animate-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+}
