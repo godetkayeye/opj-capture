@@ -1,9 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function MainLayout({ children, currentPage = 'dashboard' }) {
-  // Sur desktop, la sidebar est toujours ouverte. Sur mobile, elle est fermée par défaut
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Sur mobile, la sidebar est fermée par défaut. Sur desktop, elle est ouverte
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  // Gérer le redimensionnement de la fenêtre
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      // Sur desktop, garder la sidebar ouverte
+      if (!mobile) {
+        setSidebarOpen(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const menuItems = [
     { id: 'dashboard', label: 'Tableau de bord', section: 'MENU' },
@@ -42,18 +58,23 @@ function MainLayout({ children, currentPage = 'dashboard' }) {
   };
 
   return (
-    <div className="min-h-screen flex bg-white relative">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-white relative">
+      {/* Overlay pour mobile quand la sidebar est ouverte */}
+      {sidebarOpen && isMobile && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar - Blanc avec texte noir */}
       <aside
-        className={`${
-          sidebarOpen ? 'w-64' : 'w-20'
-        } bg-white text-gray-900 flex flex-col border-r border-gray-200 transition-all duration-300 fixed md:relative inset-y-0 left-0 z-20 md:z-auto ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        className={`fixed lg:relative inset-y-0 left-0 z-20 lg:z-auto w-64 lg:w-auto bg-white text-gray-900 flex flex-col border-r border-gray-200 transition-all duration-300 lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64 lg:w-20'
         }`}
-        style={{ top: 'auto' }}
       >
         {/* Logo */}
-        <div className="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between">
+        <div className="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between min-h-16 lg:min-h-auto">
           {sidebarOpen ? (
             <h1 className="text-lg sm:text-xl font-bold tracking-wide text-gray-900 flex-1">OPJ Capture</h1>
           ) : (
@@ -91,7 +112,7 @@ function MainLayout({ children, currentPage = 'dashboard' }) {
                 e.stopPropagation();
                 setSidebarOpen(true);
               }}
-              className="p-1.5 rounded hover:bg-gray-100 transition-colors flex-shrink-0 mx-auto"
+              className="p-1.5 rounded hover:bg-gray-100 transition-colors flex-shrink-0"
               aria-label="Ouvrir le menu"
             >
               <svg
@@ -221,24 +242,36 @@ function MainLayout({ children, currentPage = 'dashboard' }) {
         </div>
       </aside>
 
-      {/* Overlay pour mobile uniquement */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-10 md:hidden transition-opacity"
-          onClick={(e) => {
-            e.stopPropagation();
-            setSidebarOpen(false);
-          }}
-        ></div>
-      )}
-
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden bg-white w-full lg:w-auto">
-        {/* Top Header - Blanc avec texte noir */}
-        <header className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between gap-4">
+      <main className="flex-1 flex flex-col w-full lg:w-auto overflow-hidden">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+          <div className="px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-4">
+            {/* Mobile Menu Button */}
+            {isMobile && (
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0"
+                aria-label="Ouvrir le menu"
+              >
+                <svg
+                  className="w-6 h-6 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+            )}
+
             {/* Breadcrumb */}
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 flex-1 min-w-0">
+            <div className="flex items-center gap-2 text-sm text-gray-600 flex-1 overflow-hidden">
               <span className="hidden sm:inline">Tableau de bord</span>
               <span className="hidden sm:inline">/</span>
               <span className="text-gray-900 font-medium truncate">
@@ -251,7 +284,7 @@ function MainLayout({ children, currentPage = 'dashboard' }) {
             {/* User Profile */}
             <div className="flex items-center gap-2 sm:gap-4">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-semibold text-xs sm:text-sm">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-semibold text-xs sm:text-sm flex-shrink-0">
                   {getUserInitials()}
                 </div>
                 <div className="text-right hidden sm:block">
@@ -262,7 +295,7 @@ function MainLayout({ children, currentPage = 'dashboard' }) {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
                   title="Déconnexion"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
