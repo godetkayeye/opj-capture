@@ -26,7 +26,7 @@ function Captures() {
   const loadCaptures = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8000/api/captures', {
+      const response = await fetch('http://72.61.97.77:8000/api/captures', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ function Captures() {
     const validationsMap = {};
     for (const capture of capturesList) {
       try {
-        const response = await fetch(`http://localhost:8000/api/validations/capture/${capture.id}`, {
+        const response = await fetch(`http://72.61.97.77:8000/api/validations/capture/${capture.id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

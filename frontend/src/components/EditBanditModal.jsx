@@ -62,7 +62,7 @@ function EditBanditModal({ isOpen, onClose, onUpdateBandit, bandit }) {
   const loadInfractions = async () => {
     try {
       setLoadingInfractions(true);
-      const response = await fetch('http://localhost:8000/api/infractions', {
+      const response = await fetch('http://72.61.97.77:8000/api/infractions', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -257,7 +257,7 @@ function EditBanditModal({ isOpen, onClose, onUpdateBandit, bandit }) {
         reader.onloadend = async () => {
           dataToSend.photo = reader.result; // base64 string
           
-          const response = await fetch(`http://localhost:8000/api/bandits/${bandit.id}`, {
+          const response = await fetch(`http://72.61.97.77:8000/api/bandits/${bandit.id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -277,7 +277,7 @@ function EditBanditModal({ isOpen, onClose, onUpdateBandit, bandit }) {
           dataToSend.photo = null;
         }
         
-        const response = await fetch(`http://localhost:8000/api/bandits/${bandit.id}`, {
+        const response = await fetch(`http://72.61.97.77:8000/api/bandits/${bandit.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

@@ -62,7 +62,7 @@ function EditInfractionModal({ isOpen, onClose, infraction, onEditInfraction }) 
     setLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/infractions/${infraction.id}`, {
+      const response = await fetch(`http://72.61.97.77:8000/api/infractions/${infraction.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -19,7 +19,7 @@ function Dashboard() {
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8000/api/users', {
+      const response = await fetch('http://72.61.97.77:8000/api/users', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

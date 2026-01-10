@@ -14,7 +14,7 @@ function Login() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8000/api/login', {
+      const response = await fetch('http://72.61.97.77:8000/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ function Login() {
       }
     } catch (err) {
       console.error('Erreur de connexion:', err);
-      setError(`Erreur de connexion au serveur: ${err.message}. Vérifiez que le serveur Symfony est démarré sur http://localhost:8000`);
+      setError(`Erreur de connexion au serveur: ${err.message}. Vérifiez que le serveur Symfony est démarré sur http://72.61.97.77:8000`);
     } finally {
       setLoading(false);
     }

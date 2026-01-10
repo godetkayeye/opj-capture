@@ -14,7 +14,7 @@ function CaptureDetailsModal({ isOpen, onClose, captureId }) {
   const loadCaptureDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/api/captures/${captureId}`, {
+      const response = await fetch(`http://72.61.97.77:8000/api/captures/${captureId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
