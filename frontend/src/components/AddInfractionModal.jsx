@@ -62,7 +62,7 @@ function AddInfractionModal({ isOpen, onClose, onAddInfraction }) {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/infractions', {
+      const response = await fetch('http://72.61.97.77:8000/api/infractions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

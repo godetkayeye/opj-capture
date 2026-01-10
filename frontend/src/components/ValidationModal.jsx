@@ -20,7 +20,7 @@ function ValidationModal({ isOpen, onClose, onValidationUpdate, capture }) {
     if (!capture?.id) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/api/validations/capture/${capture.id}`, {
+      const response = await fetch(`http://72.61.97.77:8000/api/validations/capture/${capture.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ function ValidationModal({ isOpen, onClose, onValidationUpdate, capture }) {
       
       if (existingValidation) {
         // Mettre à jour la validation existante
-        response = await fetch(`http://localhost:8000/api/validations/${existingValidation.id}`, {
+        response = await fetch(`http://72.61.97.77:8000/api/validations/${existingValidation.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ function ValidationModal({ isOpen, onClose, onValidationUpdate, capture }) {
         });
       } else {
         // Créer une nouvelle validation
-        response = await fetch(`http://localhost:8000/api/validations/capture/${capture.id}`, {
+        response = await fetch(`http://72.61.97.77:8000/api/validations/capture/${capture.id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
