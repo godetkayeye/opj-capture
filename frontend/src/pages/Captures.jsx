@@ -4,6 +4,7 @@ import AddCaptureModal from '../components/AddCaptureModal';
 import CaptureDetailsModal from '../components/CaptureDetailsModal';
 import ValidationModal from '../components/ValidationModal';
 import Swal from 'sweetalert2';
+import { getApiUrl } from '../api/config';
 
 function Captures() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,6 +18,7 @@ function Captures() {
   const [validations, setValidations] = useState({}); // Map captureId -> validation
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const isSuperviseur = user.role === 'ROLE_SUPERVISEUR' || user.role === 'ROLE_ADMIN';
+  const isOPJ = user.role === 'ROLE_OPJ';
 
   // Charger les captures depuis l'API
   useEffect(() => {
@@ -26,7 +28,7 @@ function Captures() {
   const loadCaptures = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://72.61.97.77:8000/api/captures', {
+      const response = await fetch(getApiUrl('/api/captures'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +37,23 @@ function Captures() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        let data = await response.json();
+        
+        // Si OPJ, filtrer pour voir uniquement ses captures + les captures validées
+        if (isOPJ) {
+          console.log('User ID OPJ:', user.id);
+          console.log('Captures reçues:', data);
+          data = data.filter(capture => {
+            console.log('Capture:', capture);
+            console.log('opj:', capture.opj);
+            // Utiliser opj.id au lieu de createdBy.id
+            const isMyCapture = capture.opj?.id === user.id;
+            const isValidated = capture.status === 'VALIDEE';
+            console.log(`Capture ${capture.id}: isMyCapture=${isMyCapture}, isValidated=${isValidated}`);
+            return isMyCapture || isValidated;
+          });
+        }
+        
         setCaptures(data);
         // Charger les validations pour chaque capture
         loadValidationsForCaptures(data);
@@ -81,7 +99,7 @@ function Captures() {
     const validationsMap = {};
     for (const capture of capturesList) {
       try {
-        const response = await fetch(`http://72.61.97.77:8000/api/validations/capture/${capture.id}`, {
+        const response = await fetch(getApiUrl(`/api/validations/capture/${capture.id}`), {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

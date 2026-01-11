@@ -3,6 +3,7 @@ import MainLayout from '../layouts/MainLayout';
 import AddInfractionModal from '../components/AddInfractionModal';
 import EditInfractionModal from '../components/EditInfractionModal';
 import Swal from 'sweetalert2';
+import { getApiUrl } from '../api/config';
 
 function Infractions() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,6 +15,7 @@ function Infractions() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const isSuperviseur = user.role === 'ROLE_SUPERVISEUR' || user.role === 'ROLE_ADMIN';
   const isAdmin = user.role === 'ROLE_ADMIN';
+  const isOPJ = user.role === 'ROLE_OPJ';
 
   // Charger les infractions depuis l'API
   useEffect(() => {
@@ -23,7 +25,7 @@ function Infractions() {
   const loadInfractions = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://72.61.97.77:8000/api/infractions', {
+      const response = await fetch(getApiUrl('/api/infractions'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -91,7 +93,7 @@ function Infractions() {
 
     if (result.isConfirmed) {
       try {
-        const response = await fetch(`http://72.61.97.77:8000/api/infractions/${infraction.id}`, {
+        const response = await fetch(getApiUrl(`/api/infractions/${infraction.id}`), {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -154,6 +156,84 @@ function Infractions() {
     }
   };
 
+  const handleApproveInfraction = async (infraction) => {
+    try {
+      const response = await fetch(getApiUrl(`/api/infractions/${infraction.id}/approve`), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Succès !',
+          text: 'Infraction approuvée',
+          confirmButtonColor: '#111827',
+          timer: 2000,
+          timerProgressBar: true,
+        });
+        loadInfractions();
+      } else {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur lors de l\'approbation de l\'infraction',
+          confirmButtonColor: '#111827',
+        });
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      await Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Erreur de connexion au serveur',
+        confirmButtonColor: '#111827',
+      });
+    }
+  };
+
+  const handleRejectInfraction = async (infraction) => {
+    try {
+      const response = await fetch(getApiUrl(`/api/infractions/${infraction.id}/reject`), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Succès !',
+          text: 'Infraction rejetée',
+          confirmButtonColor: '#111827',
+          timer: 2000,
+          timerProgressBar: true,
+        });
+        loadInfractions();
+      } else {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur lors du rejet de l\'infraction',
+          confirmButtonColor: '#111827',
+        });
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      await Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Erreur de connexion au serveur',
+        confirmButtonColor: '#111827',
+      });
+    }
+  };
+
   const filteredInfractions = infractions.filter((infraction) => {
     const matchesSearch =
       infraction.libelle.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -161,17 +241,111 @@ function Infractions() {
     return matchesSearch;
   });
 
+  // Séparer les infractions approuvées et en attente (pour superviseur)
+  const unapprovedInfractions = infractions.filter(inf => !inf.isApproved);
+  const approvedInfractions = infractions.filter(inf => inf.isApproved);
+
   return (
     <MainLayout currentPage="infractions">
       <div>
-        {/* Title and Action Section */}
+        {/* Superviseur Management Section */}
+        {isSuperviseur && (
+          <>
+            <div className="mb-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Approbation des infractions</h2>
+              <p className="text-gray-600 mb-4">Validez les nouvelles infractions proposées par les officiers</p>
+
+              {loading ? (
+                <div className="text-center py-12 text-gray-500">Chargement...</div>
+              ) : unapprovedInfractions.length === 0 ? (
+                <div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
+                  Aucune infraction en attente d'approbation
+                </div>
+              ) : (
+                <div className="grid gap-4">
+                  {unapprovedInfractions.map((infraction) => (
+                    <div key={infraction.id} className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 hover:border-gray-300 transition-colors">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-1">{infraction.libelle}</h3>
+                          {infraction.description && (
+                            <p className="text-gray-600 text-sm mb-2">{infraction.description}</p>
+                          )}
+                          <p className="text-xs text-gray-400">Enregistré le {infraction.createdAt}</p>
+                        </div>
+                        <div className="flex gap-2 sm:gap-3 flex-shrink-0">
+                          <button
+                            onClick={() => handleApproveInfraction(infraction)}
+                            className="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-medium hover:bg-green-200 transition-colors flex items-center gap-2"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="hidden sm:inline">Approuver</span>
+                          </button>
+                          <button
+                            onClick={() => handleRejectInfraction(infraction)}
+                            className="px-4 py-2 bg-red-100 text-red-700 rounded-lg font-medium hover:bg-red-200 transition-colors flex items-center gap-2"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            <span className="hidden sm:inline">Rejeter</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {approvedInfractions.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+                  Infractions approuvées ({approvedInfractions.length})
+                </h3>
+                <div className="grid gap-2">
+                  {approvedInfractions.map((infraction) => (
+                    <div key={infraction.id} className="bg-green-50 rounded-lg border border-green-200 p-3 text-sm">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="font-medium text-gray-900">{infraction.libelle}</p>
+                          <p className="text-xs text-gray-600 mt-1">
+                            Approuvé par {infraction.approvedBy?.prenom} {infraction.approvedBy?.nom} le {new Date(infraction.approvedAt).toLocaleDateString('fr-FR')}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleRejectInfraction(infraction)}
+                          className="text-green-600 hover:text-red-600 transition-colors"
+                          title="Révoquer l'approbation"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <hr className="my-8" />
+          </>
+        )}
+
+        {/* Infractions Catalog Section */}
         <div className="mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Infractions</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Catalogue des infractions</h1>
               <p className="text-sm sm:text-base text-gray-600">Gérer le catalogue des infractions enregistrées dans le système.</p>
             </div>
-            {isSuperviseur && (
+            {(isSuperviseur || isOPJ) && (
               <button
                 onClick={() => setIsAddModalOpen(true)}
                 className="bg-gray-900 text-white px-4 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-all duration-200 flex items-center justify-center gap-2 w-full sm:w-auto"

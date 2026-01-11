@@ -64,6 +64,12 @@ class BanditController extends AbstractController
                 'etat' => $bandit->getEtat(),
                 'infractions' => $infractions,
                 'createdAt' => $formattedDate,
+                'createdBy' => $bandit->getCreatedBy() ? [
+                    'id' => $bandit->getCreatedBy()->getId(),
+                    'nom' => $bandit->getCreatedBy()->getNom(),
+                    'prenom' => $bandit->getCreatedBy()->getPrenom(),
+                    'matricule' => $bandit->getCreatedBy()->getMatricule(),
+                ] : null,
             ];
         }, $bandits);
 
@@ -89,7 +95,9 @@ class BanditController extends AbstractController
             ->setNom($data['nom'] ?? '')
             ->setSurnom($data['surnom'] ?? null)
             ->setSexe($data['sexe'] ?? 'M')
-            ->setEtat($data['etat'] ?? 'CAPTURE');
+            ->setEtat($data['etat'] ?? 'CAPTURE')
+            ->setCreatedAt(new \DateTime())
+            ->setCreatedBy($this->getUser());  // Assigner l'utilisateur actuel comme créateur
 
         // Gérer la photo (base64 string)
         if (!empty($data['photo'])) {

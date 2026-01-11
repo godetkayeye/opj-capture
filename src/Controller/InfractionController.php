@@ -49,6 +49,13 @@ class InfractionController extends AbstractController
                 'libelle' => $infraction->getLibelle(),
                 'description' => $infraction->getDescription(),
                 'createdAt' => $formattedDate,
+                'isApproved' => $infraction->isApproved(),
+                'approvedBy' => $infraction->getApprovedBy() ? [
+                    'id' => $infraction->getApprovedBy()->getId(),
+                    'nom' => $infraction->getApprovedBy()->getNom(),
+                    'prenom' => $infraction->getApprovedBy()->getPrenom(),
+                ] : null,
+                'approvedAt' => $infraction->getApprovedAt()?->format('Y-m-d H:i:s'),
             ];
         }, $infractions);
 
@@ -199,6 +206,72 @@ class InfractionController extends AbstractController
 
         return new JsonResponse([
             'message' => 'Infraction supprimée avec succès',
+        ]);
+    }
+
+    #[Route('/{id}/approve', name: 'api_infractions_approve', methods: ['POST'])]
+    public function approve(int $id): JsonResponse
+    {
+        // Vérifier que l'utilisateur est un superviseur ou admin
+        $this->denyAccessUnlessGranted('ROLE_SUPERVISEUR');
+
+        $infraction = $this->infractionRepository->find($id);
+        if (!$infraction) {
+            return new JsonResponse([
+                'message' => 'Infraction non trouvée',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $infraction->setApproved(true);
+        $infraction->setApprovedBy($this->getUser());
+        $infraction->setApprovedAt(new \DateTime());
+
+        $this->em->flush();
+
+        return new JsonResponse([
+            'message' => 'Infraction approuvée avec succès',
+            'infraction' => [
+                'id' => $infraction->getId(),
+                'libelle' => $infraction->getLibelle(),
+                'isApproved' => $infraction->isApproved(),
+                'approvedBy' => $infraction->getApprovedBy() ? [
+                    'id' => $infraction->getApprovedBy()->getId(),
+                    'nom' => $infraction->getApprovedBy()->getNom(),
+                    'prenom' => $infraction->getApprovedBy()->getPrenom(),
+                ] : null,
+                'approvedAt' => $infraction->getApprovedAt()?->format('Y-m-d H:i:s'),
+            ],
+        ]);
+    }
+
+    #[Route('/{id}/reject', name: 'api_infractions_reject', methods: ['POST'])]
+    public function reject(int $id): JsonResponse
+    {
+        // Vérifier que l'utilisateur est un superviseur ou admin
+        $this->denyAccessUnlessGranted('ROLE_SUPERVISEUR');
+
+        $infraction = $this->infractionRepository->find($id);
+        if (!$infraction) {
+            return new JsonResponse([
+                'message' => 'Infraction non trouvée',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $infraction->setApproved(false);
+        $infraction->setApprovedBy(null);
+        $infraction->setApprovedAt(null);
+
+        $this->em->flush();
+
+        return new JsonResponse([
+            'message' => 'Infraction rejetée avec succès',
+            'infraction' => [
+                'id' => $infraction->getId(),
+                'libelle' => $infraction->getLibelle(),
+                'isApproved' => $infraction->isApproved(),
+                'approvedBy' => null,
+                'approvedAt' => null,
+            ],
         ]);
     }
 }

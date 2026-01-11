@@ -65,7 +65,7 @@ function AddUserModal({ isOpen, onClose, onAddUser }) {
     setLoading(true);
 
     try {
-      const response = await fetch('http://72.61.97.77:8000/api/users', {
+      const response = await fetch('http://localhost:8000/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

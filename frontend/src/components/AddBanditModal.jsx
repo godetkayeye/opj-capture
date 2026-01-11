@@ -31,7 +31,7 @@ function AddBanditModal({ isOpen, onClose, onAddBandit }) {
   const loadInfractions = async () => {
     try {
       setLoadingInfractions(true);
-      const response = await fetch('http://72.61.97.77:8000/api/infractions', {
+      const response = await fetch('http://localhost:8000/api/infractions', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -226,7 +226,7 @@ function AddBanditModal({ isOpen, onClose, onAddBandit }) {
         reader.onloadend = async () => {
           dataToSend.photo = reader.result; // base64 string
           
-          const response = await fetch('http://72.61.97.77:8000/api/bandits', {
+          const response = await fetch('http://localhost:8000/api/bandits', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -239,7 +239,7 @@ function AddBanditModal({ isOpen, onClose, onAddBandit }) {
         };
         reader.readAsDataURL(formData.photo);
       } else {
-        const response = await fetch('http://72.61.97.77:8000/api/bandits', {
+        const response = await fetch('http://localhost:8000/api/bandits', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

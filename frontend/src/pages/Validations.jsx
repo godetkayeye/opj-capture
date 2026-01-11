@@ -24,8 +24,8 @@ function Validations() {
     try {
       setLoading(true);
       const url = statutFilter === 'all' 
-        ? 'http://72.61.97.77:8000/api/validations'
-        : `http://72.61.97.77:8000/api/validations?statut=${statutFilter}`;
+        ? 'http://localhost:8000/api/validations'
+        : `http://localhost:8000/api/validations?statut=${statutFilter}`;
       
       const response = await fetch(url, {
         method: 'GET',

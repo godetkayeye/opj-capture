@@ -6,6 +6,7 @@ import Bandits from './pages/Bandits';
 import Captures from './pages/Captures';
 import Validations from './pages/Validations';
 import Infractions from './pages/Infractions';
+import Suivi from './pages/Suivi';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -55,6 +56,8 @@ function App() {
       return <Bandits />;
     case 'captures':
       return <Captures />;
+    case 'suivi':
+      return <Suivi />;
     case 'validations':
       return <Validations />;
     case 'infractions':

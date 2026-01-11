@@ -3,6 +3,7 @@ import MainLayout from '../layouts/MainLayout';
 import AddBanditModal from '../components/AddBanditModal';
 import EditBanditModal from '../components/EditBanditModal';
 import Swal from 'sweetalert2';
+import { getApiUrl } from '../api/config';
 
 function Bandits() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -12,16 +13,21 @@ function Bandits() {
   const [selectedBandit, setSelectedBandit] = useState(null);
   const [bandits, setBandits] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   // Charger les bandits depuis l'API
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    setUserRole(user.role);
+    setUserId(user.id);
     loadBandits();
   }, []);
 
   const loadBandits = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://72.61.97.77:8000/api/bandits', {
+      const response = await fetch(getApiUrl('/api/bandits'), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +48,25 @@ function Bandits() {
               })
             : '-',
         }));
-        setBandits(formattedBandits);
+        
+        // Si OPJ, filtrer pour voir uniquement ses bandits + les bandits liés à ses captures
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.role === 'ROLE_OPJ') {
+          console.log('User ID OPJ:', user.id);
+          console.log('Bandits reçus:', formattedBandits);
+          const myBandits = formattedBandits.filter(b => {
+            console.log('Bandit:', b);
+            console.log('createdBy:', b.createdBy);
+            // Vérifier si createdBy est un objet ou un ID
+            const createdById = typeof b.createdBy === 'object' ? b.createdBy?.id : b.createdBy;
+            const isMyBandit = createdById === user.id;
+            console.log(`Bandit ${b.id}: createdById=${createdById}, user.id=${user.id}, isMyBandit=${isMyBandit}`);
+            return isMyBandit;
+          });
+          setBandits(myBandits);
+        } else {
+          setBandits(formattedBandits);
+        }
       } else {
         if (response.status === 401) {
           Swal.fire({
@@ -304,20 +328,26 @@ function Bandits() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-3">
-                            <button 
-                              onClick={() => handleEditBandit(bandit)}
-                              className="text-gray-400 hover:text-gray-600 transition-colors" 
-                              title="Modifier"
-                            >
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                              </svg>
-                            </button>
-                            <button className="text-gray-400 hover:text-red-600 transition-colors" title="Supprimer">
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
+                            {/* Bouton Edit - Visible pour Admin/Superviseur ou pour OPJ si c'est son bandit */}
+                            {(userRole !== 'ROLE_OPJ' || (typeof bandit.createdBy === 'object' ? bandit.createdBy?.id : bandit.createdBy) === userId) && (
+                              <button 
+                                onClick={() => handleEditBandit(bandit)}
+                                className="text-gray-400 hover:text-gray-600 transition-colors" 
+                                title="Modifier"
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                              </button>
+                            )}
+                            {/* Bouton Delete - Visible pour Admin/Superviseur uniquement */}
+                            {userRole !== 'ROLE_OPJ' && (
+                              <button className="text-gray-400 hover:text-red-600 transition-colors" title="Supprimer">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

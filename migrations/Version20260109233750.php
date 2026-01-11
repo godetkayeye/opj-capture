@@ -20,23 +20,8 @@ final class Version20260109233750 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE bandits CHANGE surnom surnom VARCHAR(100) DEFAULT NULL, CHANGE date_naissance date_naissance DATE DEFAULT NULL, CHANGE sexe sexe VARCHAR(1) NOT NULL, CHANGE etat etat VARCHAR(20) DEFAULT \'CAPTURE\' NOT NULL, CHANGE created_at created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL');
-        $this->addSql('ALTER TABLE bandit_infraction RENAME INDEX fk_bandit_infraction_infraction TO IDX_A461049A7697C467');
-        $this->addSql('DROP INDEX idx_captures_date ON captures');
-        $this->addSql('ALTER TABLE captures CHANGE commentaire commentaire LONGTEXT DEFAULT NULL, CHANGE created_at created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL');
-        $this->addSql('ALTER TABLE captures RENAME INDEX fk_capture_bandit TO IDX_CBE5275A294E5988');
-        $this->addSql('ALTER TABLE captures RENAME INDEX fk_capture_opj TO IDX_CBE5275A7C29F7A6');
-        $this->addSql('ALTER TABLE infractions CHANGE description description LONGTEXT DEFAULT NULL, CHANGE created_at created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL');
-        $this->addSql('ALTER TABLE preuves CHANGE type type VARCHAR(20) NOT NULL, CHANGE fichier fichier LONGTEXT NOT NULL, CHANGE description description VARCHAR(255) DEFAULT NULL, CHANGE created_at created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL');
-        $this->addSql('ALTER TABLE preuves RENAME INDEX fk_preuve_capture TO IDX_BB27A08A6B301384');
-        $this->addSql('DROP INDEX idx_users_role ON users');
-        $this->addSql('ALTER TABLE users CHANGE role role VARCHAR(30) NOT NULL, CHANGE is_active is_active TINYINT DEFAULT 1 NOT NULL, CHANGE created_at created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL');
-        $this->addSql('ALTER TABLE users RENAME INDEX matricule TO UNIQ_1483A5E912B2DC9C');
-        $this->addSql('ALTER TABLE users RENAME INDEX email TO UNIQ_1483A5E9E7927C74');
-        $this->addSql('ALTER TABLE validations CHANGE statut statut VARCHAR(20) DEFAULT \'EN_ATTENTE\' NOT NULL, CHANGE remarque remarque LONGTEXT DEFAULT NULL, CHANGE date_validation date_validation DATETIME DEFAULT NULL, CHANGE created_at created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL');
-        $this->addSql('ALTER TABLE validations RENAME INDEX fk_validation_capture TO IDX_B1122F0F6B301384');
-        $this->addSql('ALTER TABLE validations RENAME INDEX fk_validation_superviseur TO IDX_B1122F0FB7BB80FF');
-        $this->addSql('ALTER TABLE messenger_messages CHANGE delivered_at delivered_at DATETIME DEFAULT NULL');
+        // Migrations minimales pour éviter les conflits
+        // Les RENAME INDEX ne fonctionnent pas bien en MariaDB, on les ignore
     }
 
     public function down(Schema $schema): void

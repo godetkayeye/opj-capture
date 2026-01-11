@@ -68,6 +68,19 @@ class CaptureController extends AbstractController
                 ];
             }, $preuves);
 
+            // Récupérer le statut de validation (la dernière validation)
+            $validations = $capture->getValidations();
+            $status = 'EN_ATTENTE'; // Statut par défaut
+            $validation = null;
+            
+            if (count($validations) > 0) {
+                // Prendre la dernière validation
+                $validation = $validations->last();
+                if ($validation) {
+                    $status = $validation->getStatut();
+                }
+            }
+
             return [
                 'id' => $capture->getId(),
                 'bandit' => [
@@ -87,6 +100,13 @@ class CaptureController extends AbstractController
                 'lieuCapture' => $capture->getLieuCapture(),
                 'commentaire' => $capture->getCommentaire(),
                 'preuves' => $preuvesData,
+                'status' => $status,
+                'validation' => $validation ? [
+                    'id' => $validation->getId(),
+                    'statut' => $validation->getStatut(),
+                    'remarque' => $validation->getRemarque(),
+                    'dateValidation' => $validation->getDateValidation()?->format('Y-m-d H:i:s'),
+                ] : null,
                 'createdAt' => $formattedDate,
             ];
         }, $captures);
@@ -144,6 +164,9 @@ class CaptureController extends AbstractController
         } else {
             $capture->setDateCapture(new \DateTime());
         }
+
+        // Définir la date de création
+        $capture->setCreatedAt(new \DateTime());
 
         // Valider l'entité
         $errors = $this->validator->validate($capture);

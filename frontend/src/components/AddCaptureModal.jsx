@@ -34,7 +34,7 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
   const loadBandits = async () => {
     try {
       setLoadingBandits(true);
-      const response = await fetch('http://72.61.97.77:8000/api/bandits', {
+      const response = await fetch('http://localhost:8000/api/bandits', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -140,7 +140,7 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
         };
         
         console.log(`Envoi de la requête POST pour la preuve ${i + 1}...`);
-        const response = await fetch(`http://72.61.97.77:8000/api/preuves/capture/${captureId}`, {
+        const response = await fetch(`http://localhost:8000/api/preuves/capture/${captureId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -422,7 +422,7 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
         dataToSend.longitude = formData.longitude;
       }
 
-      const response = await fetch('http://72.61.97.77:8000/api/captures', {
+      const response = await fetch('http://localhost:8000/api/captures', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
