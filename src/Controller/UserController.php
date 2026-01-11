@@ -152,5 +152,121 @@ class UserController extends AbstractController
             ],
         ], Response::HTTP_CREATED);
     }
+
+    #[Route('/{id}', name: 'api_users_update', methods: ['PUT'])]
+    public function update(int $id, Request $request): JsonResponse
+    {
+        // Vérifier que l'utilisateur est Admin
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $user = $this->userRepository->find($id);
+        
+        if (!$user) {
+            return new JsonResponse([
+                'message' => 'Utilisateur non trouvé',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (!$data) {
+            return new JsonResponse([
+                'message' => 'Données JSON invalides',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Mettre à jour les champs
+        if (isset($data['prenom'])) {
+            $user->setPrenom($data['prenom']);
+        }
+        if (isset($data['nom'])) {
+            $user->setNom($data['nom']);
+        }
+        if (isset($data['email'])) {
+            // Vérifier que l'email n'existe pas déjà
+            $existingUser = $this->userRepository->findOneBy(['email' => $data['email']]);
+            if ($existingUser && $existingUser->getId() !== $user->getId()) {
+                return new JsonResponse([
+                    'message' => 'Cet email est déjà utilisé',
+                ], Response::HTTP_CONFLICT);
+            }
+            $user->setEmail($data['email']);
+        }
+        if (isset($data['matricule'])) {
+            // Vérifier que le matricule n'existe pas déjà
+            $existingUser = $this->userRepository->findOneBy(['matricule' => $data['matricule']]);
+            if ($existingUser && $existingUser->getId() !== $user->getId()) {
+                return new JsonResponse([
+                    'message' => 'Ce matricule est déjà utilisé',
+                ], Response::HTTP_CONFLICT);
+            }
+            $user->setMatricule($data['matricule']);
+        }
+        if (isset($data['role'])) {
+            $user->setRole($data['role']);
+        }
+        if (isset($data['status'])) {
+            $user->setIsActive($data['status'] === 'active');
+        }
+
+        // Valider l'entité
+        $errors = $this->validator->validate($user);
+        if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[] = $error->getPropertyPath() . ': ' . $error->getMessage();
+            }
+            return new JsonResponse([
+                'message' => 'Erreurs de validation',
+                'errors' => $errorMessages,
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->em->flush();
+
+        return new JsonResponse([
+            'message' => 'Utilisateur modifié avec succès',
+            'user' => [
+                'id' => $user->getId(),
+                'nom' => $user->getNom(),
+                'prenom' => $user->getPrenom(),
+                'email' => $user->getEmail(),
+                'matricule' => $user->getMatricule(),
+                'role' => $user->getRole(),
+                'isActive' => $user->isActive(),
+                'createdAt' => $user->getCreatedAt()?->format('d M Y'),
+            ],
+        ], Response::HTTP_OK);
+    }
+
+    #[Route('/{id}', name: 'api_users_delete', methods: ['DELETE'])]
+    public function delete(int $id): JsonResponse
+    {
+        // Vérifier que l'utilisateur est Admin
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $user = $this->userRepository->find($id);
+        
+        if (!$user) {
+            return new JsonResponse([
+                'message' => 'Utilisateur non trouvé',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        // Vérifier qu'on ne supprime pas le dernier admin
+        $adminCount = $this->userRepository->count(['role' => 'ROLE_ADMIN']);
+        if ($user->getRole() === 'ROLE_ADMIN' && $adminCount <= 1) {
+            return new JsonResponse([
+                'message' => 'Impossible de supprimer le dernier administrateur',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->em->remove($user);
+        $this->em->flush();
+
+        return new JsonResponse([
+            'message' => 'Utilisateur supprimé avec succès',
+        ], Response::HTTP_OK);
+    }
 }
 

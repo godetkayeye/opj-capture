@@ -482,16 +482,16 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
       ></div>
 
       {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="flex min-h-full items-center justify-center p-2 sm:p-4">
+        <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-auto max-h-[95vh] overflow-y-auto">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">Enregistrer une capture</h2>
+          <div className="flex items-center justify-between p-3 sm:p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+            <h2 className="text-lg sm:text-2xl font-bold text-gray-900">Enregistrer une capture</h2>
             <button
               onClick={handleClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -505,28 +505,28 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
           {/* Form */}
           <form 
             onSubmit={handleSubmit} 
-            className="p-6"
+            className="p-3 sm:p-6"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
                 e.preventDefault();
               }
             }}
           >
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {/* Bandit */}
               <div>
-                <label htmlFor="banditId" className="block text-sm font-medium text-gray-900 mb-2">
+                <label htmlFor="banditId" className="block text-xs sm:text-sm font-medium text-gray-900 mb-1 sm:mb-2">
                   Bandit <span className="text-red-500">*</span>
                 </label>
                 {loadingBandits ? (
-                  <div className="text-sm text-gray-500">Chargement des bandits...</div>
+                  <div className="text-xs sm:text-sm text-gray-500">Chargement des bandits...</div>
                 ) : (
                   <select
                     id="banditId"
                     name="banditId"
                     value={formData.banditId}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900 ${
+                    className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900 text-sm ${
                       errors.banditId ? 'border-red-300' : 'border-gray-300'
                     }`}
                   >
@@ -539,14 +539,14 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
                   </select>
                 )}
                 {errors.banditId && (
-                  <p className="mt-1 text-sm text-red-600">{errors.banditId}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.banditId}</p>
                 )}
               </div>
 
               {/* Date de capture */}
               <div>
-                <label htmlFor="dateCapture" className="block text-sm font-medium text-gray-900 mb-2">
-                  Date et heure de capture <span className="text-red-500">*</span>
+                <label htmlFor="dateCapture" className="block text-xs sm:text-sm font-medium text-gray-900 mb-1 sm:mb-2">
+                  Date et heure <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="datetime-local"
@@ -554,21 +554,21 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
                   name="dateCapture"
                   value={formData.dateCapture}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900 ${
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900 text-sm ${
                     errors.dateCapture ? 'border-red-300' : 'border-gray-300'
                   }`}
                 />
                 {errors.dateCapture && (
-                  <p className="mt-1 text-sm text-red-600">{errors.dateCapture}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.dateCapture}</p>
                 )}
               </div>
 
               {/* Lieu de capture avec géolocalisation */}
               <div>
-                <label htmlFor="lieuCapture" className="block text-sm font-medium text-gray-900 mb-2">
+                <label htmlFor="lieuCapture" className="block text-xs sm:text-sm font-medium text-gray-900 mb-1 sm:mb-2">
                   Lieu de capture <span className="text-red-500">*</span>
                 </label>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="text"
                     id="lieuCapture"
@@ -576,7 +576,7 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
                     value={formData.lieuCapture}
                     onChange={handleChange}
                     placeholder="Adresse ou coordonnées GPS"
-                    className={`flex-1 px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900 ${
+                    className={`flex-1 px-3 sm:px-4 py-2 sm:py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900 text-sm ${
                       errors.lieuCapture ? 'border-red-300' : 'border-gray-300'
                     }`}
                   />
@@ -584,41 +584,43 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
                     type="button"
                     onClick={getCurrentLocation}
                     disabled={gettingLocation}
-                    className="px-4 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
+                    className="px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-2 whitespace-nowrap text-sm flex-shrink-0"
                     title="Obtenir ma position actuelle"
                   >
                     {gettingLocation ? (
                       <>
-                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span>Localisation...</span>
+                        <span className="hidden sm:inline">Localisation...</span>
+                        <span className="sm:hidden">...</span>
                       </>
                     ) : (
                       <>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <span>Ma position</span>
+                        <span className="hidden sm:inline">Ma position</span>
+                        <span className="sm:hidden">Géo</span>
                       </>
                     )}
                   </button>
                 </div>
                 {errors.lieuCapture && (
-                  <p className="mt-1 text-sm text-red-600">{errors.lieuCapture}</p>
+                  <p className="mt-1 text-xs text-red-600">{errors.lieuCapture}</p>
                 )}
                 {formData.latitude && formData.longitude && (
                   <p className="mt-1 text-xs text-gray-500">
-                    Coordonnées: {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}
+                    GPS: {formData.latitude.toFixed(4)}, {formData.longitude.toFixed(4)}
                   </p>
                 )}
               </div>
 
               {/* Commentaire */}
               <div>
-                <label htmlFor="commentaire" className="block text-sm font-medium text-gray-900 mb-2">
+                <label htmlFor="commentaire" className="block text-xs sm:text-sm font-medium text-gray-900 mb-1 sm:mb-2">
                   Commentaire
                 </label>
                 <textarea
@@ -626,15 +628,15 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
                   name="commentaire"
                   value={formData.commentaire}
                   onChange={handleChange}
-                  rows={4}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900"
-                  placeholder="Détails supplémentaires sur la capture..."
+                  rows={3}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900 text-sm"
+                  placeholder="Détails supplémentaires..."
                 />
               </div>
 
               {/* Preuves */}
               <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-900 mb-1 sm:mb-2">
                   Preuves (Photos, PDF, Vidéos)
                 </label>
                 <input
@@ -643,47 +645,47 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
                   multiple
                   accept="image/*,application/pdf,video/*"
                   onChange={handlePreuveAdd}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900 text-sm"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900 text-xs sm:text-sm"
                 />
                 <p className="mt-1 text-xs text-gray-500">
-                  Formats acceptés : Images (JPG, PNG, GIF), PDF, Vidéos. Taille maximale : 10MB par fichier.
+                  Max 10MB/fichier. Formats: Images, PDF, Vidéos
                 </p>
 
                 {/* Liste des preuves ajoutées */}
                 {preuves.length > 0 && (
-                  <div className="mt-4 space-y-3">
+                  <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3">
                     {preuves.map((preuve) => (
                       <div
                         key={preuve.id}
-                        className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg bg-gray-50"
+                        className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 border border-gray-200 rounded-lg bg-gray-50"
                       >
                         <div className="flex-shrink-0">
                           {preuve.type === 'PHOTO' && preuve.fichier ? (
                             <img
                               src={preuve.fichier}
                               alt="Preview"
-                              className="w-16 h-16 object-cover rounded border border-gray-300"
+                              className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded border border-gray-300"
                             />
                           ) : preuve.type === 'PDF' ? (
-                            <div className="w-16 h-16 bg-red-100 rounded border border-gray-300 flex items-center justify-center">
-                              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-100 rounded border border-gray-300 flex items-center justify-center flex-shrink-0">
+                              <svg className="w-6 h-6 sm:w-8 sm:h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                               </svg>
                             </div>
                           ) : (
-                            <div className="w-16 h-16 bg-blue-100 rounded border border-gray-300 flex items-center justify-center">
-                              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded border border-gray-300 flex items-center justify-center flex-shrink-0">
+                              <svg className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                               </svg>
                             </div>
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-sm font-medium text-gray-900">
+                          <div className="flex items-center justify-between mb-1 gap-1">
+                            <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">
                               {preuve.file?.name || `Preuve ${preuve.type}`}
                             </span>
-                            <span className="px-2 py-0.5 text-xs font-medium bg-gray-200 text-gray-800 rounded">
+                            <span className="px-2 py-0.5 text-xs font-medium bg-gray-200 text-gray-800 rounded flex-shrink-0">
                               {preuve.type}
                             </span>
                           </div>
@@ -692,7 +694,7 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
                             placeholder="Description (optionnel)"
                             value={preuve.description}
                             onChange={(e) => handlePreuveDescriptionChange(preuve.id, e.target.value)}
-                            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900"
+                            className="w-full px-2 sm:px-3 py-1 text-xs sm:text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900"
                           />
                         </div>
                         <button
@@ -713,29 +715,30 @@ function AddCaptureModal({ isOpen, onClose, onAddCapture }) {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
+            <div className="flex items-center justify-end gap-2 sm:gap-3 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
               <button
                 type="button"
                 onClick={handleClose}
-                className="px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                className="px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium text-sm"
               >
                 Annuler
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
               >
                 {loading ? (
                   <>
-                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span>Enregistrement en cours...</span>
+                    <span className="hidden sm:inline">Enregistrement...</span>
+                    <span className="sm:hidden">...</span>
                   </>
                 ) : (
-                  'Enregistrer la capture'
+                  <span>Enregistrer</span>
                 )}
               </button>
             </div>

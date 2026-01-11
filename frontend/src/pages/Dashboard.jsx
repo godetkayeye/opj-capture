@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import MainLayout from '../layouts/MainLayout';
 import AddUserModal from '../components/AddUserModal';
+import EditUserModal from '../components/EditUserModal';
 import Swal from 'sweetalert2';
 import { getApiUrl } from '../api/config';
 
@@ -9,6 +10,8 @@ function Dashboard() {
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
@@ -188,6 +191,84 @@ function Dashboard() {
     loadUsers();
   };
 
+  const handleEditUser = (user) => {
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeleteUser = (user) => {
+    Swal.fire({
+      title: 'Supprimer l\'utilisateur',
+      text: `Êtes-vous sûr de vouloir supprimer ${user.prenom} ${user.nom}? Cette action est irréversible.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#dc2626',
+      didOpen: () => {
+        document.querySelector('.swal2-confirm').style.backgroundColor = '#dc2626';
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch(getApiUrl(`/api/users/${user.id}`), {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          });
+
+          if (response.ok) {
+            loadUsers();
+            Swal.fire('Succès', 'Utilisateur supprimé avec succès', 'success');
+          } else {
+            Swal.fire('Erreur', 'Impossible de supprimer l\'utilisateur', 'error');
+          }
+        } catch (error) {
+          console.error('Erreur:', error);
+          Swal.fire('Erreur', 'Erreur de connexion', 'error');
+        }
+      }
+    });
+  };
+
+  const handleToggleStatus = (user) => {
+    const newStatus = user.status === 'active' ? 'inactive' : 'active';
+    Swal.fire({
+      title: 'Changer le statut',
+      text: `Voulez-vous ${newStatus === 'active' ? 'activer' : 'désactiver'} cet utilisateur?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#111827',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch(getApiUrl(`/api/users/${user.id}`), {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ status: newStatus }),
+          });
+
+          if (response.ok) {
+            loadUsers();
+            Swal.fire('Succès', 'Statut mis à jour', 'success');
+          } else {
+            Swal.fire('Erreur', 'Impossible de mettre à jour le statut', 'error');
+          }
+        } catch (error) {
+          console.error('Erreur:', error);
+          Swal.fire('Erreur', 'Erreur de connexion', 'error');
+        }
+      }
+    });
+  };
+
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -290,9 +371,12 @@ function Dashboard() {
         ) : userRole === 'ROLE_SUPERVISEUR' ? (
           // Dashboard pour Superviseur - Validation et Statistiques
           <>
-            <div className="mb-6 sm:mb-8">
-              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Tableau de bord Superviseur</h1>
-              <p className="text-gray-600">Suivi et validation des captures</p>
+            <div className="mb-4 sm:mb-8">
+              <h1 className="text-xl sm:text-4xl font-bold text-gray-900 mb-1">
+                <span className="sm:hidden">Tableau de bord</span>
+                <span className="hidden sm:inline">Tableau de bord Superviseur</span>
+              </h1>
+              <p className="text-xs sm:text-base text-gray-600">Suivi et validation</p>
             </div>
 
             {/* Stats Cards */}
@@ -469,98 +553,215 @@ function Dashboard() {
             </div>
 
             {/* Users Table */}
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          {loading ? (
-            <div className="p-8 text-center text-gray-500">Chargement...</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Utilisateur
-                    </th>
-                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">
-                      Matricule
-                    </th>
-                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Rôles
-                    </th>
-                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden sm:table-cell">
-                      Statut
-                    </th>
-                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">
-                      Inscrit le
-                    </th>
-                    <th className="px-3 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredUsers.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                        Aucun utilisateur trouvé
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-3 sm:px-6 py-4">
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-semibold text-xs sm:text-sm flex-shrink-0">
-                              {getInitials(user.prenom, user.nom)}
-                            </div>
-                            <div className="min-w-0">
-                              <div className="text-sm font-medium text-gray-900 truncate">
-                                {user.prenom} {user.nom}
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+              {loading ? (
+                <div className="p-8 text-center text-gray-500">Chargement...</div>
+              ) : filteredUsers.length === 0 ? (
+                <div className="p-8 text-center">
+                  <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <p className="text-gray-500 font-medium">Aucun utilisateur trouvé</p>
+                  <p className="text-gray-400 text-sm mt-1">Ajoutez un nouvel utilisateur pour commencer</p>
+                </div>
+              ) : (
+                <>
+                  {/* Vue Mobile - Cartes */}
+                  <div className="md:hidden divide-y divide-gray-200">
+                    {filteredUsers.map((user) => (
+                      <div key={user.id} className="p-4 hover:bg-blue-50 transition-colors">
+                        {/* Header de la carte */}
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="flex-shrink-0">
+                              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-900 to-gray-700 text-white flex items-center justify-center font-semibold text-sm">
+                                {getInitials(user.prenom, user.nom)}
                               </div>
-                              <div className="text-xs sm:text-sm text-gray-500 truncate">{user.email}</div>
-                              <div className="text-xs text-gray-500 md:hidden">{user.matricule || '-'}</div>
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium text-gray-900 truncate">
+                                {user.prenom} {user.nom}
+                              </p>
+                              <p className="text-xs text-gray-500 truncate">{user.email}</p>
                             </div>
                           </div>
-                        </td>
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                          <span className="text-sm text-gray-900 font-medium">{user.matricule || '-'}</span>
-                        </td>
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                          <span className="text-xs sm:text-sm text-gray-900">{getRoleLabel(user.role)}</span>
-                        </td>
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap hidden sm:table-cell">
-                          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            {user.status}
-                          </span>
-                        </td>
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden lg:table-cell">
-                          {user.joined}
-                        </td>
-                        <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            <button className="text-gray-400 hover:text-gray-600 transition-colors" title="Modifier">
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                              </svg>
-                            </button>
-                            <button className="text-gray-400 hover:text-gray-600 transition-colors" title="Désactiver">
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 12H6" />
-                              </svg>
-                            </button>
-                            <button className="text-gray-400 hover:text-red-600 transition-colors" title="Supprimer">
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
+                        </div>
+
+                        {/* Infos de la carte */}
+                        <div className="space-y-2 mb-3">
+                          {/* Matricule */}
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="text-gray-500">Matricule:</span>
+                            <span className="text-gray-900 font-medium">{user.matricule || '—'}</span>
                           </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
+
+                          {/* Rôle */}
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="text-gray-500">Rôle:</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                              {user.role === 'ROLE_ADMIN' && '👤'}
+                              {user.role === 'ROLE_SUPERVISEUR' && '🔍'}
+                              {user.role === 'ROLE_OPJ' && '📋'}
+                              {getRoleLabel(user.role)}
+                            </span>
+                          </div>
+
+                          {/* Statut */}
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="text-gray-500">Statut:</span>
+                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                              user.status === 'active'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${user.status === 'active' ? 'bg-green-600' : 'bg-gray-600'}`}></span>
+                              {user.status === 'active' ? 'Actif' : 'Inactif'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center justify-end gap-1 pt-3 border-t border-gray-200">
+                          <button
+                            onClick={() => handleEditUser(user)}
+                            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
+                            title="Modifier"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleToggleStatus(user)}
+                            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-yellow-600 hover:bg-yellow-50 transition-all"
+                            title="Activer/Désactiver"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(user)}
+                            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"
+                            title="Supprimer"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Vue Desktop - Tableau */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                          <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Utilisateur
+                          </th>
+                          <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Matricule
+                          </th>
+                          <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Rôle
+                          </th>
+                          <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Statut
+                          </th>
+                          <th className="px-4 sm:px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {filteredUsers.map((user) => (
+                          <tr key={user.id} className="hover:bg-blue-50 transition-colors duration-150">
+                            {/* Colonne Utilisateur */}
+                            <td className="px-4 sm:px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="flex-shrink-0">
+                                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gray-900 to-gray-700 text-white flex items-center justify-center font-semibold text-sm">
+                                    {getInitials(user.prenom, user.nom)}
+                                  </div>
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-sm font-medium text-gray-900 truncate">
+                                    {user.prenom} {user.nom}
+                                  </p>
+                                  <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                </div>
+                              </div>
+                            </td>
+
+                            {/* Colonne Matricule */}
+                            <td className="px-4 sm:px-6 py-4">
+                              <span className="text-sm text-gray-600">{user.matricule || '—'}</span>
+                            </td>
+
+                            {/* Colonne Rôle */}
+                            <td className="px-4 sm:px-6 py-4">
+                              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                                {user.role === 'ROLE_ADMIN' && '👤'}
+                                {user.role === 'ROLE_SUPERVISEUR' && '🔍'}
+                                {user.role === 'ROLE_OPJ' && '📋'}
+                                {getRoleLabel(user.role)}
+                              </span>
+                            </td>
+
+                            {/* Colonne Statut */}
+                            <td className="px-4 sm:px-6 py-4">
+                              <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                                user.status === 'active'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}>
+                                <span className={`w-2 h-2 rounded-full mr-2 ${user.status === 'active' ? 'bg-green-600' : 'bg-gray-600'}`}></span>
+                                {user.status === 'active' ? 'Actif' : 'Inactif'}
+                              </span>
+                            </td>
+
+                            {/* Colonne Actions */}
+                            <td className="px-4 sm:px-6 py-4 text-right">
+                              <div className="flex items-center justify-end gap-1 sm:gap-2">
+                                <button
+                                  onClick={() => handleEditUser(user)}
+                                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
+                                  title="Modifier"
+                                >
+                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={() => handleToggleStatus(user)}
+                                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-yellow-600 hover:bg-yellow-50 transition-all"
+                                  title="Activer/Désactiver"
+                                >
+                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteUser(user)}
+                                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all"
+                                  title="Supprimer"
+                                >
+                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Modal */}
@@ -568,6 +769,12 @@ function Dashboard() {
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}
               onAddUser={handleAddUser}
+            />
+            <EditUserModal
+              isOpen={isEditModalOpen}
+              onClose={() => setIsEditModalOpen(false)}
+              user={selectedUser}
+              onUserUpdated={loadUsers}
             />
           </>
         )}

@@ -20,6 +20,7 @@ class ApiLoginSuccessHandler implements AuthenticationSuccessHandlerInterface
                 'email' => $user->getEmail(),
                 'nom' => $user->getNom(),
                 'prenom' => $user->getPrenom(),
+                'matricule' => $user->getMatricule(),
                 'role' => $user->getRole(),
             ],
         ]);

@@ -107,40 +107,40 @@ function Validations() {
     <MainLayout currentPage="validations">
       <div>
         {/* Title Section */}
-        <div className="mb-4 sm:mb-6">
-          <div className="flex items-center justify-between mb-2">
+        <div className="mb-3">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Validations</h1>
-              <p className="text-sm sm:text-base text-gray-600">Gérer les validations des captures par les superviseurs.</p>
+              <h1 className="text-2xl font-bold text-gray-900">Validations</h1>
+              <p className="text-xs sm:text-sm text-gray-600">Gérer les validations des captures par les superviseurs.</p>
             </div>
           </div>
         </div>
 
         {/* Search and Filter Section */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4 sm:mb-6">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-3 mb-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             {/* Search */}
             <div className="flex-1 relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
               <input
                 type="text"
-                placeholder="Rechercher des validations..."
+                placeholder="Rechercher..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900"
+                className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-gray-900"
               />
             </div>
 
             {/* Statut Filter */}
-            <div className="relative sm:w-auto w-full">
+            <div className="relative sm:w-48">
               <select
                 value={statutFilter}
                 onChange={(e) => setStatutFilter(e.target.value)}
-                className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-8 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-sm text-gray-900 w-full"
+                className="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-xs sm:text-sm text-gray-900 w-full"
               >
                 <option value="all">Statut : Tous</option>
                 <option value="EN_ATTENTE">En attente</option>
@@ -148,7 +148,7 @@ function Validations() {
                 <option value="REJETEE">Rejetée</option>
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </div>
@@ -159,49 +159,129 @@ function Validations() {
         {/* Validations Table */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-gray-500">Chargement...</div>
+            <div className="p-6 text-center text-gray-500 text-sm">Chargement...</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Capture
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Superviseur
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Statut
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Date de validation
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Remarque
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredValidations.length === 0 ? (
+            <>
+              {/* Desktop View - Compact Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
                     <tr>
-                      <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                        Aucune validation trouvée
-                      </td>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Capture</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Superviseur</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Statut</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date validat.</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Remarque</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                     </tr>
-                  ) : (
-                    filteredValidations.map((validation) => (
-                      <tr key={validation.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredValidations.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="px-3 py-6 text-center text-gray-500 text-sm">
+                          Aucune validation trouvée
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredValidations.map((validation) => (
+                        <tr key={validation.id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-3 py-3">
+                            <div className="flex items-center gap-2">
+                              {validation.capture.bandit.photo ? (
+                                <img
+                                  src={validation.capture.bandit.photo}
+                                  alt={validation.capture.bandit.nom}
+                                  className="w-8 h-8 object-cover rounded-full border border-gray-200"
+                                />
+                              ) : (
+                                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                  </svg>
+                                </div>
+                              )}
+                              <div className="min-w-0">
+                                <p className="text-xs font-medium text-gray-900 truncate">
+                                  {validation.capture.bandit.nom}
+                                  {validation.capture.bandit.surnom && ` (${validation.capture.bandit.surnom})`}
+                                </p>
+                                <p className="text-xs text-gray-500 truncate">{validation.capture.dateCaptureFormatted}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-3 py-3 whitespace-nowrap">
+                            <div>
+                              <p className="text-xs font-medium text-gray-900">{validation.superviseur.prenom} {validation.superviseur.nom}</p>
+                              <p className="text-xs text-gray-500">M:{validation.superviseur.matricule}</p>
+                            </div>
+                          </td>
+                          <td className="px-3 py-3 whitespace-nowrap">
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatutBadgeColor(validation.statut)}`}>
+                              {getStatutLabel(validation.statut)}
+                            </span>
+                          </td>
+                          <td className="px-3 py-3 whitespace-nowrap text-xs text-gray-500">
+                            {validation.dateValidationFormatted || '-'}
+                          </td>
+                          <td className="px-3 py-3">
+                            <span className="text-xs text-gray-600 truncate max-w-xs block">
+                              {validation.remarque || '-'}
+                            </span>
+                          </td>
+                          <td className="px-3 py-3 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => {
+                                  setSelectedCapture(validation.capture);
+                                  setIsDetailsModalOpen(true);
+                                }}
+                                className="text-gray-400 hover:text-gray-600 p-1"
+                                title="Détails"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                              </button>
+                              {isSuperviseur && validation.statut === 'EN_ATTENTE' && (
+                                <button
+                                  onClick={() => {
+                                    setSelectedCapture(validation.capture);
+                                    setIsValidationModalOpen(true);
+                                  }}
+                                  className="text-gray-400 hover:text-gray-600 p-1"
+                                  title="Valider/Rejeter"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile View - Compact Cards */}
+              <div className="md:hidden">
+                {filteredValidations.length === 0 ? (
+                  <div className="p-4 text-center text-gray-500 text-sm">Aucune validation trouvée</div>
+                ) : (
+                  <div className="divide-y divide-gray-200">
+                    {filteredValidations.map((validation) => (
+                      <div key={validation.id} className="p-3 hover:bg-gray-50 transition-colors">
+                        <div className="flex gap-3">
+                          {/* Photo */}
+                          <div className="flex-shrink-0">
                             {validation.capture.bandit.photo ? (
                               <img
                                 src={validation.capture.bandit.photo}
-                                alt={`${validation.capture.bandit.nom} ${validation.capture.bandit.surnom || ''}`}
-                                className="w-10 h-10 object-cover rounded-full border-2 border-gray-200"
+                                alt={validation.capture.bandit.nom}
+                                className="w-10 h-10 object-cover rounded-full border border-gray-200"
                               />
                             ) : (
                               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
@@ -210,75 +290,71 @@ function Validations() {
                                 </svg>
                               </div>
                             )}
-                            <div>
-                              <p className="text-sm font-medium text-gray-900">
-                                {validation.capture.bandit.nom}
-                                {validation.capture.bandit.surnom && ` (${validation.capture.bandit.surnom})`}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                {validation.capture.dateCaptureFormatted}
-                              </p>
+                          </div>
+
+                          {/* Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-gray-900 truncate">
+                                  {validation.capture.bandit.nom}
+                                  {validation.capture.bandit.surnom && ` (${validation.capture.bandit.surnom})`}
+                                </p>
+                                <p className="text-xs text-gray-600">{validation.capture.dateCaptureFormatted}</p>
+                              </div>
+                              <span className={`px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${getStatutBadgeColor(validation.statut)}`}>
+                                {getStatutLabel(validation.statut)}
+                              </span>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div>
-                            <span className="text-sm font-medium text-gray-900">
-                              {validation.superviseur.prenom} {validation.superviseur.nom}
-                            </span>
-                            <p className="text-xs text-gray-500">Mat: {validation.superviseur.matricule}</p>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatutBadgeColor(validation.statut)}`}>
-                            {getStatutLabel(validation.statut)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {validation.dateValidationFormatted || '-'}
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-sm text-gray-500 max-w-xs truncate block">
-                            {validation.remarque || '-'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-3">
-                            <button
-                              onClick={() => {
-                                setSelectedCapture(validation.capture);
-                                setIsDetailsModalOpen(true);
-                              }}
-                              className="text-gray-400 hover:text-gray-600 transition-colors"
-                              title="Voir les détails"
-                            >
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                              </svg>
-                            </button>
-                            {isSuperviseur && validation.statut === 'EN_ATTENTE' && (
+
+                            <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-2">
+                              <div>
+                                <p className="text-gray-500">Superviseur</p>
+                                <p className="font-medium text-gray-900">{validation.superviseur.prenom} {validation.superviseur.nom}</p>
+                              </div>
+                              <div>
+                                <p className="text-gray-500">Date validat.</p>
+                                <p className="font-medium text-gray-900">{validation.dateValidationFormatted || '-'}</p>
+                              </div>
+                            </div>
+
+                            {validation.remarque && (
+                              <div className="mb-2 p-2 bg-gray-50 rounded">
+                                <p className="text-xs text-gray-600">{validation.remarque}</p>
+                              </div>
+                            )}
+
+                            {/* Actions */}
+                            <div className="flex items-center gap-2">
                               <button
                                 onClick={() => {
                                   setSelectedCapture(validation.capture);
-                                  setIsValidationModalOpen(true);
+                                  setIsDetailsModalOpen(true);
                                 }}
-                                className="text-gray-400 hover:text-gray-600 transition-colors"
-                                title="Valider/Rejeter"
+                                className="flex-1 text-xs px-2 py-1 bg-gray-900 text-white rounded hover:bg-gray-800 transition-colors"
                               >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                                Détails
                               </button>
-                            )}
+                              {isSuperviseur && validation.statut === 'EN_ATTENTE' && (
+                                <button
+                                  onClick={() => {
+                                    setSelectedCapture(validation.capture);
+                                    setIsValidationModalOpen(true);
+                                  }}
+                                  className="flex-1 text-xs px-2 py-1 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors"
+                                >
+                                  Valider
+                                </button>
+                              )}
+                            </div>
                           </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>

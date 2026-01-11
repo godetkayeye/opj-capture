@@ -96,7 +96,6 @@ class BanditController extends AbstractController
             ->setSurnom($data['surnom'] ?? null)
             ->setSexe($data['sexe'] ?? 'M')
             ->setEtat($data['etat'] ?? 'CAPTURE')
-            ->setCreatedAt(new \DateTime())
             ->setCreatedBy($this->getUser());  // Assigner l'utilisateur actuel comme créateur
 
         // Gérer la photo (base64 string)
@@ -291,6 +290,34 @@ class BanditController extends AbstractController
                 'createdAt' => $formattedDate,
             ],
         ]);
+    }
+
+    #[Route('/{id}', name: 'api_bandits_delete', methods: ['DELETE'])]
+    public function delete(int $id): JsonResponse
+    {
+        // Vérifier que l'utilisateur est administrateur ou superviseur
+        $this->denyAccessUnlessGranted('ROLE_SUPERVISEUR');
+
+        $bandit = $this->banditRepository->find($id);
+        
+        if (!$bandit) {
+            return new JsonResponse([
+                'message' => 'Bandit non trouvé',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        try {
+            $this->em->remove($bandit);
+            $this->em->flush();
+
+            return new JsonResponse([
+                'message' => 'Bandit supprimé avec succès',
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'message' => 'Erreur lors de la suppression du bandit: ' . $e->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
 

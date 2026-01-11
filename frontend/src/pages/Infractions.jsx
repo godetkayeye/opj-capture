@@ -380,84 +380,162 @@ function Infractions() {
           </div>
         </div>
 
-        {/* Infractions Table */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          {loading ? (
-            <div className="p-8 text-center text-gray-500">Chargement...</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Libellé
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Description
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Enregistré le
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredInfractions.length === 0 ? (
+        {/* Infractions Table - Desktop View */}
+        {loading ? (
+          <div className="p-8 text-center text-gray-500">Chargement...</div>
+        ) : (
+          <>
+            {/* Desktop View */}
+            <div className="hidden md:block bg-white rounded-lg border border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
                     <tr>
-                      <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                        Aucune infraction trouvée
-                      </td>
+                      <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Libellé
+                      </th>
+                      <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Description
+                      </th>
+                      <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Enreg.
+                      </th>
+                      <th className="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
-                  ) : (
-                    filteredInfractions.map((infraction) => (
-                      <tr key={infraction.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm font-medium text-gray-900">{infraction.libelle}</span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-sm text-gray-500 max-w-md truncate block">
-                            {infraction.description || '-'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {infraction.createdAt || '-'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-3">
-                            {isSuperviseur && (
-                              <button
-                                onClick={() => handleEditInfraction(infraction)}
-                                className="text-gray-400 hover:text-gray-600 transition-colors"
-                                title="Modifier"
-                              >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                              </button>
-                            )}
-                            {isAdmin && (
-                              <button
-                                onClick={() => handleDeleteInfraction(infraction)}
-                                className="text-gray-400 hover:text-red-600 transition-colors"
-                                title="Supprimer"
-                              >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                              </button>
-                            )}
-                          </div>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredInfractions.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-3 py-8 text-center text-gray-500">
+                          Aucune infraction trouvée
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      filteredInfractions.map((infraction) => (
+                        <tr key={infraction.id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-3 py-3 whitespace-nowrap">
+                            <span className="text-xs sm:text-sm font-medium text-gray-900">{infraction.libelle}</span>
+                          </td>
+                          <td className="px-3 py-3">
+                            <span className="text-xs sm:text-sm text-gray-500 max-w-md truncate block">
+                              {infraction.description || '-'}
+                            </span>
+                          </td>
+                          <td className="px-3 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
+                            {infraction.createdAt || '-'}
+                          </td>
+                          <td className="px-3 py-3 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              {isSuperviseur && (
+                                <button
+                                  onClick={() => handleEditInfraction(infraction)}
+                                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                                  title="Modifier"
+                                >
+                                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                </button>
+                              )}
+                              {isAdmin && (
+                                <button
+                                  onClick={() => handleDeleteInfraction(infraction)}
+                                  className="text-gray-400 hover:text-red-600 transition-colors"
+                                  title="Supprimer"
+                                >
+                                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          )}
-        </div>
+
+            {/* Mobile View - Cards */}
+            <div className="md:hidden space-y-3">
+              {filteredInfractions.length === 0 ? (
+                <div className="bg-white rounded-lg border border-gray-200 p-4 text-center text-gray-500">
+                  Aucune infraction trouvée
+                </div>
+              ) : (
+                filteredInfractions.map((infraction) => (
+                  <div
+                    key={infraction.id}
+                    className="bg-white rounded-lg border border-gray-200 p-3 hover:border-gray-300 transition-colors"
+                  >
+                    {/* Header with Title */}
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-semibold text-gray-900 truncate">
+                          {infraction.libelle}
+                        </h3>
+                      </div>
+                      <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                        {isSuperviseur && (
+                          <button
+                            onClick={() => handleEditInfraction(infraction)}
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                            title="Modifier"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                        )}
+                        {isAdmin && (
+                          <button
+                            onClick={() => handleDeleteInfraction(infraction)}
+                            className="text-gray-400 hover:text-red-600 transition-colors"
+                            title="Supprimer"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Info Grid - 2 columns */}
+                    <div className="grid grid-cols-2 gap-2 mb-2 text-xs">
+                      <div className="bg-gray-50 rounded p-2">
+                        <p className="text-gray-600">Enregistré</p>
+                        <p className="font-medium text-gray-900">{infraction.createdAt || '-'}</p>
+                      </div>
+                      <div className="bg-gray-50 rounded p-2">
+                        <p className="text-gray-600">Statut</p>
+                        <p className="font-medium text-gray-900">
+                          {infraction.isApproved ? (
+                            <span className="text-green-600">Approuvée</span>
+                          ) : (
+                            <span className="text-orange-600">En attente</span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    {infraction.description && (
+                      <div className="bg-gray-50 rounded p-2 text-xs">
+                        <p className="text-gray-600 mb-1">Description</p>
+                        <p className="text-gray-700">{infraction.description}</p>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Modals */}
