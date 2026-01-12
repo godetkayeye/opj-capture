@@ -106,55 +106,55 @@ function Login() {
       </div>
 
       {/* Right Section - Login Form */}
-      <div className="w-full md:w-1/2 bg-gray-50 md:bg-white flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 md:py-0">
+      <div className="w-full md:w-1/2 bg-gray-50 md:bg-white flex items-center justify-center px-3 sm:px-6 py-6 sm:py-12 md:py-0 min-h-screen md:min-h-auto">
         <div className="w-full max-w-sm">
           {/* Mobile Header */}
-          <div className="md:hidden text-center mb-6 sm:mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl mb-4">
-              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="md:hidden text-center mb-4 sm:mb-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl mb-2 sm:mb-4">
+              <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
+            <h1 className="text-lg sm:text-3xl font-bold text-gray-900 mb-0.5 sm:mb-1">
               OPJ Capture
             </h1>
-            <p className="text-xs sm:text-sm text-gray-600">
+            <p className="text-xs text-gray-600">
               Accédez à votre compte
             </p>
           </div>
 
           {/* Login Card */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-xl p-6 sm:p-8 md:shadow-none md:border-0">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 hidden md:block">
+          <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 shadow-xl p-4 sm:p-8 md:shadow-none md:border-0">
+            <h2 className="text-lg sm:text-2xl font-bold text-gray-900 mb-0.5 sm:mb-1 hidden md:block">
               Connexion
             </h2>
-            <p className="text-sm text-gray-600 mb-6 hidden md:block">
+            <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6 hidden md:block">
               Accès réservé aux officiers, superviseurs et administrateurs.
             </p>
 
             {error && (
-              <div className="mb-4 p-3 sm:p-4 bg-red-50 border-l-4 border-red-500 rounded-lg text-red-700 text-xs sm:text-sm animate-shake">
-                <div className="flex items-start gap-2 sm:gap-3">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mb-3 sm:mb-4 p-2.5 sm:p-4 bg-red-50 border-l-4 border-red-500 rounded text-red-700 text-xs animate-shake">
+                <div className="flex items-start gap-2">
+                  <svg className="w-3.5 h-3.5 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>{error}</span>
+                  <span className="text-xs sm:text-sm">{error}</span>
                 </div>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-5">
               {/* Champ Email */}
               <div>
                 <label 
                   htmlFor="email" 
-                  className="block text-xs sm:text-sm font-semibold text-gray-900 mb-2"
+                  className="block text-xs font-semibold text-gray-900 mb-1.5 sm:mb-2"
                 >
                   Email
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-4 flex items-center pointer-events-none">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
@@ -168,7 +168,7 @@ function Login() {
                     }}
                     onFocus={() => setFocusedField('email')}
                     onBlur={() => setFocusedField(null)}
-                    className={`w-full pl-10 sm:pl-12 pr-4 py-2 sm:py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 text-sm transition-all duration-200 ${
+                    className={`w-full pl-9 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-2.5 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 text-xs sm:text-sm transition-all duration-200 ${
                       focusedField === 'email' ? 'ring-2 ring-blue-500 border-blue-500' : 'border-gray-300'
                     } ${error && !email ? 'border-red-300' : ''}`}
                     placeholder="admin@opj.com"
@@ -183,13 +183,13 @@ function Login() {
               <div>
                 <label 
                   htmlFor="password" 
-                  className="block text-xs sm:text-sm font-semibold text-gray-900 mb-2"
+                  className="block text-xs font-semibold text-gray-900 mb-1.5 sm:mb-2"
                 >
                   Mot de passe
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-4 flex items-center pointer-events-none">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   </div>
@@ -203,7 +203,7 @@ function Login() {
                     }}
                     onFocus={() => setFocusedField('password')}
                     onBlur={() => setFocusedField(null)}
-                    className={`w-full pl-10 sm:pl-12 pr-12 py-2 sm:py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 text-sm transition-all duration-200 ${
+                    className={`w-full pl-9 sm:pl-12 pr-10 sm:pr-12 py-2 sm:py-2.5 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 text-xs sm:text-sm transition-all duration-200 ${
                       focusedField === 'password' ? 'ring-2 ring-blue-500 border-blue-500' : 'border-gray-300'
                     } ${error && !password ? 'border-red-300' : ''}`}
                     placeholder="••••••••"
@@ -214,7 +214,7 @@ function Login() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none rounded p-1"
+                    className="absolute right-1.5 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none rounded p-1"
                     tabIndex={-1}
                     aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                   >
@@ -236,22 +236,22 @@ function Login() {
               <button
                 type="submit"
                 disabled={loading || !email || !password}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group text-sm sm:text-base mt-2"
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded sm:rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group text-xs sm:text-base mt-1 sm:mt-2"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   {loading ? (
                     <>
-                      <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin h-3 w-3 sm:h-5 sm:w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      <span className="hidden sm:inline">Connexion en cours...</span>
-                      <span className="sm:hidden">Connexion...</span>
+                      <span className="hidden sm:inline">Connexion...</span>
+                      <span className="sm:hidden">Connexion</span>
                     </>
                   ) : (
                     <>
                       <span>Se connecter</span>
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
                     </>
@@ -262,7 +262,7 @@ function Login() {
           </div>
 
           {/* Footer */}
-          <p className="text-center text-xs text-gray-500 mt-6 sm:mt-8">
+          <p className="text-center text-xs text-gray-500 mt-4 sm:mt-8">
             © 2025 OPJ Capture - Tous droits réservés
           </p>
         </div>
